@@ -19,23 +19,15 @@ const App: React.FC = () => {
 
 
 
-
 //   const authModel = new AuthModel();
   const garageModel = useMemo(() => new GarageModel(), []);
 // Обновляем состояние компонента при изменении данных в модели
   const [garages, setGarages] = useState<Garage[]>(() => garageModel.getGarages());
-const [filteredGarages, setFilteredGarages] = useState<Garage[]>(garages);
+    const [searchId, setSearchId] = useState<number>();
 
 const handleSearch = (id: number) => {
-     console.log("handleSearch вызван с id:", id);
-  if (isNaN(id)) {
-    setFilteredGarages(garages);
-  } else {
-    const foundGarages = garageModel.searchGarageById(id);
-    console.log("Найденные гаражи:", foundGarages);
-    setFilteredGarages(foundGarages);
-  }
-   console.log("Состояние filteredGarages после поиска:", filteredGarages);
+      setSearchId(id);
+
 };
 
   useEffect(() => {

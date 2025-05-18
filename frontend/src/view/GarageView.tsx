@@ -32,6 +32,15 @@ const GarageView: React.FC<GarageViewProps> = ({
   const [selectedGarageId, setSelectedGarageId] = useState<number>();
 const [selectedGarage, setSelectedGarage] = useState<Garage | null>(null);
 
+const filteredGarages = React.useMemo(() => {
+  if (searchId.trim() === "") return garages;
+
+  const id = Number(searchId);
+  if (isNaN(id)) return garages;
+
+  return garages.filter(g => g.id === id);
+}, [garages, searchId]);
+
 //   const [energy, setEnergy] = useState<string>("");
 //   const [balance, setBalance] = useState<string>("");
   const handleEdit = (garage: Garage) => {
@@ -113,7 +122,8 @@ useEffect(() => {
           </tr>
         </thead>
         <tbody>
-          {garages.map((garage) => (
+         {filteredGarages.length > 0 ? (
+    filteredGarages.map((garage) => (
             <tr key={garage.id}>
               <td>{garage.id}</td>
               <td>{garage.energy} кВт</td>
@@ -128,7 +138,12 @@ useEffect(() => {
                 <button type="button" onClick={() => handleOpenPaymentModal(garage.id)}>Оплатить</button>
               </td>
             </tr>
-          ))}
+          ))
+        ): (
+    <tr>
+      <td colSpan={6}>Гараж не найден</td>
+    </tr>
+  )}
         </tbody>
       </table>
 
