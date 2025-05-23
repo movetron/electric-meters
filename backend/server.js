@@ -33,5 +33,32 @@ app.post("/api/transactions", async (req, res) => {
     res.status(500).send("Ошибка сервера");
   }
 });
+app.post("/api/users", async (req, res) => {
+  const { username, password } = req.body;
 
+  if (!username || !password) {
+    return res.status(400).json({ message: "Все поля обязательны" });
+  }
+
+  try {
+    const result = await pool.query(
+      
+      SELECT id, username, 'user' AS role FROM users WHERE username = $1 AND password = $2
+      UNION
+      SELECT id, username, 'admin' AS role FROM admins WHERE username = $1 AND password = $2
+    ,
+      [username, password]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ message: "Неверный логин или пароль" });
+    }
+
+    const user = result.rows[0];
+    res.status(200).json(user);
+  } catch (err) {
+    console.error("Ошибка входа:", err);
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+});
 app.listen(5000, () => console.log("Сервер запущен на порту 5000"));
